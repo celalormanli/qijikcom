@@ -12,3 +12,11 @@ def word_list(request):
         words =  Word.objects.all()
         serializer = WordSerializer(words, many=True)
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+def word_list_filtered(request, fk):
+    if request.method=='GET':
+        words=Word.objects.filter(category_name=fk)
+        serializer = WordSerializer(words, many=True)
+        return Response(serializer.data)
