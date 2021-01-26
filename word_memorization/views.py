@@ -27,7 +27,12 @@ def word_list(request):
 @api_view(['GET'])
 def word_list_filtered(request, fk):
     if request.method=='GET':
-        words=Word.objects.filter(category_name=fk)
+        words=None
+        if fk in cache:
+            words=cache.get(fk)
+        else:
+            words=Word.objects.filter(category_name=fk)
+            cache.set(fk,words,timeout=CACHE_TTL)
         serializer = WordSerializer(words, many=True)
         return Response(serializer.data)
 
