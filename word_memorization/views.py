@@ -13,38 +13,35 @@ CACHE_TTL=getattr(settings,'CACHE_TTL',DEFAULT_TIMEOUT)
 
 @api_view(['GET'])
 def word_list(request):
-    if request.method=='GET':
-        words=None
-        if 'words' in cache:
-            words =  cache.get('words')    
-        else:
-            words =  Word.objects.all()
-            cache.set('words', words, timeout=CACHE_TTL)
-        serializer = WordSerializer(words, many=True)
-        return Response(serializer.data)
+    words=None
+    if 'words' in cache:
+        words =  cache.get('words')    
+    else:
+        words =  Word.objects.all()
+        cache.set('words', words, timeout=CACHE_TTL)
+    serializer = WordSerializer(words, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
 def word_list_filtered(request, fk):
-    if request.method=='GET':
-        words=None
-        if fk in cache:
-            words=cache.get(fk)
-        else:
-            words=Word.objects.filter(category_name=fk)
-            cache.set(fk,words,timeout=CACHE_TTL)
-        serializer = WordSerializer(words, many=True)
-        return Response(serializer.data)
+    words=None
+    if fk in cache:
+        words=cache.get(fk)
+    else:
+        words=Word.objects.filter(category_name=fk)
+        cache.set(fk,words,timeout=CACHE_TTL)
+    serializer = WordSerializer(words, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
 def category_list(request):
-    if request.method=='GET':
-        categories=None
-        if 'categories' in cache:
-            categories=cache.get('categories')
-        else:
-            categories=Category.objects.all()
-            cache.set('categories',categories, timeout=CACHE_TTL)
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
+    categories=None
+    if 'categories' in cache:
+        categories=cache.get('categories')
+    else:
+        categories=Category.objects.all()
+        cache.set('categories',categories, timeout=CACHE_TTL)
+    serializer = CategorySerializer(categories, many=True)
+    return Response(serializer.data)
