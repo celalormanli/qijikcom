@@ -13,7 +13,7 @@ from django.core.cache.backends.base import DEFAULT_TIMEOUT
 CACHE_TTL=getattr(settings,'CACHE_TTL',DEFAULT_TIMEOUT)
 
 @api_view(['GET'])
-def word_list(request):
+def get_word_list(request):
     words=None
     if 'words' in cache:
         words =  cache.get('words')    
@@ -26,7 +26,7 @@ def word_list(request):
 
 
 @api_view(['GET'])
-def word_list_filtered(request, fk):
+def get_word_list_filtered(request, fk):
     words=None
     if fk in cache:
         words=cache.get(fk)
@@ -38,7 +38,18 @@ def word_list_filtered(request, fk):
 
 
 @api_view(['GET'])
-def category_list(request):
+def get_word(request, pk):
+    word=None
+    if pk in cache:
+        word=cache.get(pk)
+    else:
+        word=Word.objects.get(english=pk)
+        cache.set(pk,word,timeout=CACHE_TTL)
+    serializer = WordSerializer(word, many=False)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_category_list(request):
     categories=None
     if 'categories' in cache:
         categories=cache.get('categories')
@@ -57,3 +68,11 @@ def add_word(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+@api_view(['PUT'])
+def update_word(request, pk):
+    serializer=WordSerializer(data=request.data)
+    if serializer.is_valid():
+        print('HEEaREEEEEEEEE')
+        serializer.update(request.data,pk)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

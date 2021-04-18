@@ -13,6 +13,7 @@ class WordSerializer(serializers.HyperlinkedModelSerializer):
         validated_data['category_name']=category_name
         return Word.objects.create(**validated_data)
 
+    
 class CategorySerializer(serializers.Serializer):
     category_name = serializers.CharField(required=False, allow_blank=False,max_length=100)
     en = serializers.CharField(required=False, allow_blank=False,max_length=100)

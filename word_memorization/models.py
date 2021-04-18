@@ -12,7 +12,7 @@ class Category(models.Model):
 
 
 class Word(models.Model):
-    english=models.CharField(max_length=100, blank=False, default='')
+    english=models.CharField(max_length=100, blank=False, default='', primary_key=True)
     turkish=models.CharField(max_length=100, blank=False, default='')
     german=models.CharField(max_length=100, blank=False, default='')
     french=models.CharField(max_length=100, blank=False, default='')
