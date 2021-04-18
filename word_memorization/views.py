@@ -4,6 +4,7 @@ from word_memorization.serializers import WordSerializer, CategorySerializer
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
+from rest_framework import status
 from word_memorization.models import Word, Category
 from django.core.cache import cache
 from django.conf import settings
@@ -20,6 +21,7 @@ def word_list(request):
         words =  Word.objects.all()
         cache.set('words', words, timeout=CACHE_TTL)
     serializer = WordSerializer(words, many=True)
+    print(serializer.data)
     return Response(serializer.data)
 
 
@@ -45,3 +47,13 @@ def category_list(request):
         cache.set('categories',categories, timeout=CACHE_TTL)
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def add_word(request):
+    serializer=WordSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(request.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
